@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Chúc mừng 20/10 - Bảo Thy 💖</title>
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  background:#fff;
+  overflow:hidden;
+  font-family:"Poppins",sans-serif;
+}
+#three-wrap{position:fixed;inset:0;z-index:1}
+#ui{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:5}
+#giftContainer{display:flex;flex-direction:column;align-items:center;gap:14px}
+#giftBox{
+  width:150px;height:150px;border-radius:12px;
+  background:linear-gradient(135deg,#ff3366,#ff6688);
+  position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:transform .25s;animation:glow 1.6s ease-in-out infinite alternate;
+}
+@keyframes glow{
+  from{box-shadow:0 10px 30px rgba(255,100,150,0.2)}
+  to{box-shadow:0 30px 70px rgba(255,100,150,0.5)}
+}
+#lid{
+  position:absolute;top:-22px;left:0;width:150px;height:30px;
+  border-radius:8px;background:linear-gradient(135deg,#ffd1df,#ff7aa7);
+  transform-origin:bottom center;transition:transform 1s cubic-bezier(.2,.9,.3,1)
+}
+#ribbon{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:36px}
+#hint{color:#ff4b8b;font-size:18px;text-align:center;animation:blink 1.6s infinite alternate}
+@keyframes blink{from{opacity:.6}to{opacity:1}}
+#message{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:7;text-align:center;opacity:0}
+#message.show{animation:msgIn .9s forwards}
+@keyframes msgIn{from{opacity:0;transform:translate(-50%,-40%) scale(.98)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+h1{
+  color:#ff1a1a;
+  text-shadow:0 0 10px #ff0000,0 0 25px #ff3333,0 0 40px #ff6666;
+  font-size:42px;margin-bottom:10px;
+}
+.chuc{
+  position:absolute;
+  color:#ff3366;
+  font-weight:600;
+  font-size:18px;
+  opacity:0;
+  animation:fadeIn 2s forwards;
+  text-shadow:0 0 5px rgba(255,0,0,0.3);
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:scale(0.9)}
+  to{opacity:1;transform:scale(1)}
+}
+</style>
+</head>
+<body>
+
+<div id="three-wrap"></div>
+
+<div id="ui">
+  <div id="giftContainer">
+    <div id="giftBox" title="Bấm để mở quà">
+      <div id="lid"></div>
+      <div id="ribbon">🎀</div>
+    </div>
+    <div id="hint">🎁 Bấm vào hộp quà để mở điều bất ngờ 💖</div>
+  </div>
+</div>
+
+<div id="message">
+  <h1>💐 Chúc mừng 20/10, Bảo Thy 💖</h1>
+</div>
+
+<!-- Nhạc nền -->
+<iframe style="display:none" width="0" height="0"
+  src="https://www.youtube.com/embed/wrM0nqC-EUw?autoplay=1&loop=1&playlist=wrM0nqC-EUw"></iframe>
+
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+<script>
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,0.1,3000);
+camera.position.set(0,0,250);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setSize(innerWidth,innerHeight);
+document.getElementById('three-wrap').appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0xffffff,0.8));
+
+const COUNT=6000;
+const pos=new Float32Array(COUNT*3),col=new Float32Array(COUNT*3);
+for(let i=0;i<COUNT;i++){
+  let i3=i*3;
+  pos[i3]=(Math.random()-0.5)*1200;
+  pos[i3+1]=(Math.random()-0.5)*800;
+  pos[i3+2]=(Math.random()-0.5)*800;
+  col[i3]=1;col[i3+1]=0.1;col[i3+2]=0.1;
+}
+const geo=new THREE.BufferGeometry();
+geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+const mat=new THREE.PointsMaterial({size:3,vertexColors:true,transparent:true,blending:THREE.AdditiveBlending});
+const points=new THREE.Points(geo,mat);
+scene.add(points);
+
+const heartTargets=[];
+for(let i=0;i<COUNT;i++){
+  const t=Math.random()*Math.PI*2,s=8;
+  const x=16*Math.pow(Math.sin(t),3);
+  const y=(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)); 
+  heartTargets.push(new THREE.Vector3(x*s+(Math.random()-0.5)*5,-y*s+(Math.random()-0.5)*5,(Math.random()-0.5)*40));
+}
+
+let opened=false,bloom=0;
+function loop(){
+  requestAnimationFrame(loop);
+  if(opened&&bloom<1)bloom+=0.015;
+  const p=geo.attributes.position.array;
+  for(let i=0;i<COUNT;i++){
+    let i3=i*3;const h=heartTargets[i];
+    p[i3]+=(h.x-p[i3])*0.04*bloom;
+    p[i3+1]+=(h.y-p[i3+1])*0.04*bloom;
+    p[i3+2]+=(h.z-p[i3+2])*0.04*bloom;
+  }
+  geo.attributes.position.needsUpdate=true;
+  renderer.render(scene,camera);
+}
+loop();
+
+const wishes=[
+  "Chúc em luôn xinh đẹp 💕","Luôn cười tươi 😍","Gặp nhiều may mắn 🍀",
+  "Mạnh mẽ và tự tin 🌟","Hạnh phúc mỗi ngày 💖",
+  "Mãi rạng rỡ 💐","Công việc thuận lợi 💼","Niềm vui bất tận 🎉",
+  "Giấc mơ thành hiện thực ✨","Mãi yêu đời 💞"
+];
+
+const giftBox=document.getElementById('giftBox');
+const lid=document.getElementById('lid');
+const hint=document.getElementById('hint');
+const msg=document.getElementById('message');
+
+giftBox.onclick=()=>{
+  if(opened)return;
+  opened=true;
+  lid.style.transform="rotateX(160deg)";
+  hint.style.display="none";
+  giftBox.style.transform="scale(.9)";
+  setTimeout(()=>{giftBox.style.opacity='0';giftBox.style.transition='opacity 1s';},800);
+  setTimeout(()=>{document.getElementById('ui').style.display='none';msg.classList.add('show');showWishes();},1600);
+};
+
+// 🌸 Rải đều 2 bên trái tim, mỗi bên 5 dòng, không chồng nhau
+function showWishes(){
+  const container=document.body;
+  const spacing=45; // khoảng cách giữa các dòng
+  const offsetY=-110; // dịch toàn bộ cụm chữ lên
+  for(let i=0;i<wishes.length;i++){
+    const el=document.createElement('div');
+    el.className='chuc';
+    el.textContent=wishes[i];
+    const isLeft=i<5;
+    const x=isLeft?-280:280; // bên trái hoặc bên phải
+    const y=offsetY+(i%5)*spacing;
+    el.style.left=`calc(50% + ${x}px)`;
+    el.style.top=`calc(50% + ${y}px)`;
+    el.style.animationDelay=(0.5+i*0.3)+"s";
+    container.appendChild(el);
+  }
+}
+</script>
+</body>
+</html>
